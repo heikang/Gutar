@@ -27,7 +27,7 @@ public class RecordService extends IntentService {
             /*Record part*/
         int bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         double[] doubleFFT = new double[bufferSize];
-        DoubleFFT_1D doubleFFT_1D = new DoubleFFT_1D(16384);
+        DoubleFFT_1D doubleFFT_1D = new DoubleFFT_1D(2048);
 
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,bufferSize);
@@ -36,15 +36,19 @@ public class RecordService extends IntentService {
 
         while(true) {
             int recordingBuffer = audioRecord.read(buffer, 0, bufferSize);
-            Log.e("MainActivityOnCreat",String.valueOf(recordingBuffer));
+            Log.e("MainActivityOnCreat","fft once");
 
-            //从short变换到double
-            for (int i = 0; i < 16384 && i < recordingBuffer; i++) {
+            //FFT
+            for (int i = 0; i < 2048 && i < recordingBuffer; i++) {
                 // 除以32768.0 得到-1.0到1.0之间的数字
                 doubleFFT[i] = (double) buffer[i]/ 32768.0;
-                //Log.e("MainActivityOnCreat",String.valueOf(doubleFFT[i]));
             }
             doubleFFT_1D.realForward(doubleFFT);
+            //Calculation Freq
+
+            //compare with standard freq
+
+            //update GUI
         }
             /*Record part end*/
     }
