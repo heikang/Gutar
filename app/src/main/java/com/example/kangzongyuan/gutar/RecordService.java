@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Handler;
 import android.util.Log;
 import org.jtransforms.fft.DoubleFFT_1D;
+
+import java.io.FileOutputStream;
+
 
 /**
  * Created by kangzongyuan on 2017-03-07.
@@ -25,18 +29,18 @@ public class RecordService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
             /*Record part*/
-        int bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        final int bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         double[] doubleFFT = new double[bufferSize];
+        double value;int index;
         DoubleFFT_1D doubleFFT_1D = new DoubleFFT_1D(2048);
 
-        AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO,
+        final AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,bufferSize);
-        short[] buffer = new short[bufferSize];
+        final short[] buffer = new short[bufferSize];
         audioRecord.startRecording();
 
         while(true) {
             int recordingBuffer = audioRecord.read(buffer, 0, bufferSize);
-            Log.e("MainActivityOnCreat","fft once");
 
             //FFT
             for (int i = 0; i < 2048 && i < recordingBuffer; i++) {
@@ -44,7 +48,16 @@ public class RecordService extends IntentService {
                 doubleFFT[i] = (double) buffer[i]/ 32768.0;
             }
             doubleFFT_1D.realForward(doubleFFT);
+
             //Calculation Freq
+            value = Math.abs(doubleFFT[0]);index = 0;
+            for (int i = 0; i < 2048 && i < recordingBuffer; i++) {
+                if (value < Math.abs(doubleFFT[i])) {
+                    value = Math.abs(doubleFFT[i]);
+                    index = i;
+                }
+            }
+            Log.e("My","HZ="+index*12);
 
             //compare with standard freq
 
