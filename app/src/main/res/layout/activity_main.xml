@@ -10,4 +10,12 @@
     tools:context="com.example.kangzongyuan.gutar.MainActivity">
 
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/freq"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp" />
 </RelativeLayout>
